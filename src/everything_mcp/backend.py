@@ -397,8 +397,9 @@ def _split_query_terms(query: str) -> list[str]:
     ext:md`` works but ``es.exe "dm:today ext:md"`` searches the literal
     string.
 
-    Quoted sections (Everything syntax for grouping) must stay intact:
-    ``path:"C:\\My Path"`` and ``"exact name.txt"`` are single tokens.
+    Quoted sections (Everything syntax for grouping) are kept together as
+    single tokens, then quotes are stripped because es.exe argv elements
+    are passed literally — quotes are a shell concept, not es.exe's.
     """
     tokens: list[str] = []
     i = 0
@@ -408,7 +409,7 @@ def _split_query_terms(query: str) -> list[str]:
         if query[i] == " ":
             i += 1
             continue
-        # Collect one token
+        # Collect one token (respecting quoted sections)
         start = i
         while i < n:
             if query[i] == '"':
@@ -422,7 +423,12 @@ def _split_query_terms(query: str) -> list[str]:
                 break
             else:
                 i += 1
-        tokens.append(query[start:i])
+        token = query[start:i]
+        # Strip quotes: es.exe receives argv literally, quotes are
+        # shell-only. path:"C:\My Path" → path:C:\My Path
+        token = token.replace('"', '')
+        if token:
+            tokens.append(token)
     return tokens
 
 
