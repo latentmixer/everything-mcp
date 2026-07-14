@@ -105,7 +105,7 @@ class SearchInput(BaseModel):
             "'size:>10mb ext:log' (large logs), "
             "'dm:today ext:py' (Python files modified today), "
             "'content:TODO ext:py' (files containing TODO - requires content indexing), "
-            "'\"exact phrase\"' (exact filename match), "
+            "'\"exact phrase\"' (keep a phrase together), "
             "'regex:test_\\d+\\.py$' (regex). "
             "Combine with space (AND) or | (OR). Prefix ! to exclude."
         ),
@@ -210,16 +210,6 @@ class SearchByTypeInput(BaseModel):
         return v
 
 
-@mcp.tool(
-    name="everything_search_by_type",
-    annotations={
-        "title": "Search by File Type Category",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
-)
 async def everything_search_by_type(params: SearchByTypeInput) -> str:
     """Search for files by type category.
 
@@ -269,16 +259,6 @@ class FindRecentInput(BaseModel):
     max_results: int = Field(default=50, ge=1, le=500)
 
 
-@mcp.tool(
-    name="everything_find_recent",
-    annotations={
-        "title": "Find Recently Modified Files",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
-)
 async def everything_find_recent(params: FindRecentInput) -> str:
     """Find files modified within a recent time period.
 
@@ -443,16 +423,6 @@ class CountStatsInput(BaseModel):
     )
 
 
-@mcp.tool(
-    name="everything_count_stats",
-    annotations={
-        "title": "Count & Size Statistics",
-        "readOnlyHint": True,
-        "destructiveHint": False,
-        "idempotentHint": True,
-        "openWorldHint": False,
-    },
-)
 async def everything_count_stats(params: CountStatsInput) -> str:
     """Get count and size statistics for files matching a query.
 
@@ -880,8 +850,20 @@ def _read_preview(path: Path, max_lines: int) -> str | None:
     if not is_text:
         return None
 
-    # Read lines with encoding fallback
-    for encoding in ("utf-8", "utf-8-sig", "latin-1"):
+    try:
+        with open(path, "rb") as f:
+            bom = f.read(4)
+    except (OSError, PermissionError):
+        return None
+
+    if bom.startswith((b"\xff\xfe\x00\x00", b"\x00\x00\xfe\xff")):
+        encodings = ("utf-32",)
+    elif bom.startswith((b"\xff\xfe", b"\xfe\xff")):
+        encodings = ("utf-16",)
+    else:
+        encodings = ("utf-8", "utf-8-sig", "latin-1")
+
+    for encoding in encodings:
         try:
             with open(path, encoding=encoding) as f:
                 lines: list[str] = []

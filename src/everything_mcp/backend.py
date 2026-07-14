@@ -161,10 +161,8 @@ class EverythingBackend:
         """
         cmd = self._base_cmd()
 
-        # Result count & offset
-        cmd.extend(["-n", str(min(max_results, self.config.max_results_cap))])
-        if offset > 0:
-            cmd.extend(["-o", str(offset)])
+        result_limit = min(max_results, self.config.max_results_cap)
+        cmd.extend(["-viewport-offset", str(offset), "-viewport-count", str(result_limit)])
 
         # Sort
         sort_value = SORT_MAP.get(sort, sort)

@@ -2,6 +2,15 @@
 
 All notable changes to **everything-mcp** will be documented in this file.
 
+## [1.0.6+latentmixer.1] - 2026-07-14
+
+### Changed
+
+- Limited the MCP surface to `everything_search` and `everything_file_details`.
+- Replaced incompatible `-n`/`-o` pagination with native viewport pagination.
+- Added UTF-16 and UTF-32 byte-order-mark detection for text previews.
+- Corrected quoted-phrase guidance that overstated exact filename matching.
+
 ## [1.0.6] - 2026-07-02
 
 ### Added

@@ -6,16 +6,20 @@
   <p>
     <a href="https://pypi.org/project/everything-mcp/"><img alt="PyPI" src="https://img.shields.io/pypi/v/everything-mcp.svg?cacheSeconds=300&v=20260204"></a>
     <a href="https://pypi.org/project/everything-mcp/"><img alt="Python" src="https://img.shields.io/pypi/pyversions/everything-mcp.svg?cacheSeconds=300&v=20260204"></a>
-    <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/elis132/everything-mcp.svg?cacheSeconds=300&v=20260204"></a>
+    <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/latentmixer/everything-mcp.svg?cacheSeconds=300&v=20260204"></a>
   </p>
 </div>
 
 ---
 
+## Maintained fork
+
+This fork keeps only `everything_search` and `everything_file_details` in the MCP tool surface. It also fixes result pagination and UTF-16/UTF-32 text previews while retaining upstream's query handling.
+
 ## Quick start
 
 ```
-/plugin marketplace add elis132/everything-mcp
+/plugin marketplace add latentmixer/everything-mcp
 /plugin install everything-mcp@everything-mcp
 ```
 
@@ -25,7 +29,7 @@ That's it for Claude Code - the plugin bundles the MCP server and a skill that t
 
 |  | **everything-mcp** (this) | [mamertofabian](https://github.com/mamertofabian/mcp-everything-search) (342⭐) | [Josephur](https://github.com/Josephur/everything-mcp) (26⭐) | essovius |
 |---|---|---|---|---|
-| Tools | 5 | 1 | 1 | 16 |
+| Tools | 2 | 1 | 1 | 16 |
 | Setup | Auto-detects es.exe | Manual SDK DLL path | Manual HTTP server + host/port | Manual es.exe in PATH |
 | Everything 1.5 | Auto-detects instance | Not supported | Untested | Manual flag |
 | Talks to Everything via | `es.exe` subprocess | Everything SDK (DLL) | Everything's HTTP server plugin (unauthenticated) | `es.exe` subprocess |

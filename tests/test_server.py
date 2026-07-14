@@ -13,6 +13,7 @@ from everything_mcp.server import (
     _format_search_results,
     _get_file_details_sync,
     _read_preview,
+    mcp,
 )
 
 # ── _format_search_results ────────────────────────────────────────────────
@@ -115,6 +116,14 @@ class TestReadPreview:
         result = _read_preview(f, 1)
         assert "Sverige" in result
 
+    def test_utf16_content(self, tmp_path):
+        for encoding in ("utf-16-le", "utf-16-be"):
+            f = tmp_path / f"unicode-{encoding}.txt"
+            bom = b"\xff\xfe" if encoding.endswith("le") else b"\xfe\xff"
+            f.write_bytes(bom + "첫째 줄\n둘째 줄\n".encode(encoding))
+            result = _read_preview(f, 2)
+            assert result == "첫째 줄\n둘째 줄"
+
     def test_latin1_fallback(self, tmp_path):
         f = tmp_path / "latin.txt"
         f.write_bytes("café\n".encode("latin-1"))
@@ -133,6 +142,16 @@ class TestReadPreview:
         result = _read_preview(f, 1)
         assert result is not None
         assert "preview truncated" in result
+
+
+class TestToolSurface:
+    @pytest.mark.asyncio
+    async def test_only_search_and_file_details_are_registered(self):
+        tools = await mcp.list_tools()
+        assert {tool.name for tool in tools} == {
+            "everything_search",
+            "everything_file_details",
+        }
 
 
 # ── Extension/filename sets ───────────────────────────────────────────────

@@ -314,8 +314,11 @@ class TestEverythingBackend:
 
             cmd = mock_run.call_args[0][0]
             assert cmd[0] == backend.config.es_path
-            assert "-n" in cmd
+            assert "-viewport-count" in cmd
             assert "10" in cmd
+            assert "-viewport-offset" in cmd
+            assert "0" in cmd
+            assert "-n" not in cmd
             assert "-sort" in cmd
             assert "name" in cmd
             assert "*.py" in cmd
@@ -356,7 +359,10 @@ class TestEverythingBackend:
             assert "-w" in cmd
             assert "-r" in cmd
             assert "-p" in cmd
-            assert "-o" in cmd
+            assert "-viewport-offset" in cmd
+            assert "-viewport-count" in cmd
+            assert "-n" not in cmd
+            assert "-o" not in cmd
             assert "50" in cmd
 
     @pytest.mark.asyncio
